@@ -85,7 +85,7 @@ if st.button("Add Assignment"):
 st.subheader("🗑 Delete Assignment")
 if not df.empty:
     delete_options = df.apply(
-        lambda row: f"{row.name}|{row['Subject']} - {row['Task']} ({str(row['DueDate'])[:10]})"
+        lambda row: f"{row.name}|{row['Subject']} - {row['Task']} ({str(row['DueDate'])[:10]})",
         axis=1
     ).tolist()
     delete_selection = st.selectbox("Select Assignment to delete", delete_options)
