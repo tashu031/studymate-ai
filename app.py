@@ -95,6 +95,9 @@ df["Days Left"] = (
 
 def get_priority(days):
 
+    if days < 0:
+        return "🔴 Overdue"
+
     if days <= 2:
         return "🔴 High"
 
@@ -108,11 +111,17 @@ df["Priority"] = df["Days Left"].apply(
     get_priority
 )
 
+df["Status"] = df["Days Left"].apply(
+    lambda days: "Overdue" if days < 0 else ("Due Today" if days == 0 else "Upcoming")
+)
+
 # Precompute KPI metrics so sidebar can reference them
 total_assignments = len(df)
+active_assignments = len(df[df["Status"] != "Overdue"])
+overdue_assignments = len(df[df["Status"] == "Overdue"])
 upcoming_exams = len(exam_df)
 urgent_tasks = len(
-    df[df["Days Left"] <= 3]
+    df[(df["Days Left"] <= 3) & (df["Days Left"] >= 0)]
 )
 
 productivity_score = max(
@@ -240,11 +249,15 @@ st.info(
     f"""
     👋 Welcome Back!
 
-    📚 Assignments: {total_assignments}
+    📚 Total Assignments: {total_assignments}
+
+    ✅ Active Assignments: {active_assignments}
+
+    ⚠️ Overdue Assignments: {overdue_assignments}
 
     📝 Upcoming Exams: {upcoming_exams}
 
-    ⚠️ Urgent Tasks: {urgent_tasks}
+    🚨 Urgent Tasks: {urgent_tasks}
 
     ⚡ Productivity Score: {productivity_score}%
 
@@ -347,27 +360,59 @@ due_date = st.date_input("Due Date")
 
 if st.button("Add Assignment"):
 
-    new_row = pd.DataFrame({
-        "Subject": [subject],
-        "Task": [task],
-        "DueDate": [due_date]
-    })
 
-    updated_df = pd.concat(
-        [df, new_row],
-        ignore_index=True
+    if subject.strip() == "" or task.strip() == "":
+        st.error("Please enter Subject and Task")
+    else:
+
+        new_row = pd.DataFrame({
+            "Subject": [subject],
+            "Task": [task],
+            "DueDate": [due_date]
+        })
+
+        updated_df = pd.concat(
+            [df, new_row],
+            ignore_index=True
+        )
+
+        updated_df.to_csv(
+            "data/assignments.csv",
+            index=False
+        )
+
+        st.success(
+            "✅ Assignment Added Successfully!"
+        )
+
+        st.rerun()
+
+st.subheader("🗑 Delete Assignment")
+
+delete_options = df.apply(
+    lambda row: f"{row.name}|{row['Subject']} - {row['Task']} ({row['DueDate'].date()})",
+    axis=1
+).tolist()
+
+if delete_options:
+    delete_selection = st.selectbox(
+        "Select Assignment",
+        delete_options
     )
 
-    updated_df.to_csv(
-        "data/assignments.csv",
-        index=False
-    )
+    if st.button("Delete Assignment"):
+        delete_index = int(delete_selection.split("|", 1)[0])
+        df = df[df.index != delete_index]
 
-    st.success(
-        "✅ Assignment Added Successfully!"
-    )
+        df.to_csv(
+            "data/assignments.csv",
+            index=False
+        )
 
-    st.rerun()
+        st.success("✅ Assignment deleted")
+        st.rerun()
+else:
+    st.info("No assignments available to delete.")
 
 st.divider()
 
@@ -377,10 +422,22 @@ st.divider()
 
 st.subheader("📋 Assignment Dashboard")
 
+active_df = df[df["Status"] != "Overdue"].copy()
+
 st.dataframe(
-    df,
+    active_df,
     use_container_width=True
 )
+
+if overdue_assignments > 0:
+    st.subheader("⚠️ Overdue Assignments")
+    st.warning(
+        f"{overdue_assignments} assignment(s) are overdue. Please review or delete them."
+    )
+    st.dataframe(
+        df[df["Status"] == "Overdue"],
+        use_container_width=True
+    )
 
 
 st.subheader("🏆 Achievements")
