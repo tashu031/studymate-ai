@@ -80,7 +80,7 @@ if st.button("Add Assignment"):
         df = pd.concat([df, new_row], ignore_index=True)
         df.to_csv("data/assignments.csv", index=False)
         st.success("✅ Assignment added successfully.")
-        st.experimental_rerun()
+        st.rerun()
 
 st.subheader("🗑 Delete Assignment")
 if not df.empty:
@@ -95,6 +95,6 @@ if not df.empty:
         df = df[df.index != delete_index]
         df.to_csv("data/assignments.csv", index=False)
         st.success("✅ Assignment deleted.")
-        st.experimental_rerun()
+        st.rerun()
 else:
     st.info("No assignments to delete.")
