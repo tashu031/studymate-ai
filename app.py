@@ -87,7 +87,13 @@ exam_df = pd.read_csv("data/exams.csv")
 # Compute due dates and priority early so sidebar metrics can use them
 today = pd.to_datetime(date.today())
 
-df["DueDate"] = pd.to_datetime(df["DueDate"])
+df["DueDate"] = pd.to_datetime(
+    df["DueDate"],
+    format="mixed",
+    errors="coerce"
+)
+
+df = df.dropna(subset=["DueDate"])
 
 df["Days Left"] = (
     df["DueDate"] - today
@@ -390,7 +396,7 @@ if st.button("Add Assignment"):
 st.subheader("🗑 Delete Assignment")
 
 delete_options = df.apply(
-    lambda row: f"{row.name}|{row['Subject']} - {row['Task']} ({row['DueDate'].date()})",
+    lambda row: f"{row.name}|{row['Subject']} - {row['Task']} ({str(row['DueDate'])[:10]})",
     axis=1
 ).tolist()
 
@@ -495,8 +501,7 @@ st.write(
 # =====================================
 # MOST URGENT TASK
 # =====================================
-
-if len(df) > 0:
+if not df.empty:
 
     urgent_task = (
         df.sort_values("Days Left")
@@ -508,7 +513,6 @@ if len(df) > 0:
         f"{urgent_task['Task']} "
         f"({urgent_task['Days Left']} day(s) left)"
     )
-
 # =====================================
 # AI RECOMMENDATION
 # =====================================
@@ -628,7 +632,8 @@ st.subheader("⏳ Exam Countdown")
 for _, row in exam_df.iterrows():
 
     exam_date = pd.to_datetime(
-        row["ExamDate"]
+    row["ExamDate"],
+    errors="coerce"
     )
 
     days_left = (

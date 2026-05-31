@@ -1,6 +1,9 @@
-Subject,Task,DueDate
-Python,Numpy Assignment,2026-06-02
-DBMS,SQL Lab,2026-06-03
-Java,Mini Project,2026-06-05
-OS,Process Scheduling Notes,2026-06-04
-TOC,Game,2026-05-30
+Subject,Task,DueDate,Days Left,Priority,Status
+DBMS,SQL Lab,2026-06-03,3,🟡 Medium,Upcoming
+Java,Mini Project,2026-06-05,5,🟡 Medium,Upcoming
+OS,Process Scheduling Notes,2026-06-04,4,🟡 Medium,Upcoming
+AI,MINI report,2026-05-31,0,🔴 High,Due Today
+Physics,Motion Chapter ,2026-06-01,1,🔴 High,Upcoming
+Physics,Motion Chapter ,2026-06-01,1,🔴 High,Upcoming
+Physics,Motion Chapter ,2026-06-01,1,🔴 High,Upcoming
+Physics,Motion Chapter ,2026-06-01,1,🔴 High,Upcoming
