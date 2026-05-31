@@ -9,7 +9,13 @@ df = pd.read_csv("data/assignments.csv")
 today = pd.to_datetime(date.today())
 
 if "DueDate" in df.columns:
-    df["DueDate"] = pd.to_datetime(df["DueDate"])
+    df["DueDate"] = pd.to_datetime(
+        df["DueDate"],
+        errors="coerce"
+    )
+
+    df = df.dropna(subset=["DueDate"])
+
 else:
     df["DueDate"] = pd.NaT
 
@@ -79,7 +85,7 @@ if st.button("Add Assignment"):
 st.subheader("🗑 Delete Assignment")
 if not df.empty:
     delete_options = df.apply(
-        lambda row: f"{row.name}|{row['Subject']} - {row['Task']} ({row['DueDate'].date()})",
+        lambda row: f"{row.name}|{row['Subject']} - {row['Task']} ({str(row['DueDate'])[:10]})"
         axis=1
     ).tolist()
     delete_selection = st.selectbox("Select Assignment to delete", delete_options)
