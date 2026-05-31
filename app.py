@@ -17,7 +17,52 @@ st.set_page_config(
 )
 
 dark_mode = st.checkbox("🌙 Dark Mode")
+if dark_mode:
 
+    st.markdown("""
+    <style>
+
+    .stApp {
+        background-color: #0f172a;
+        color: white;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: white !important;
+    }
+
+    p, div, label {
+        color: white !important;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+
+    section[data-testid="stSidebar"] {
+        background-color: #111827;
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: white !important;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+else:
+
+    st.markdown("""
+    <style>
+
+    .stApp {
+        background-color: white;
+        color: black;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
 
 # =====================================
 # GEMINI CONFIG
